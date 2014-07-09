@@ -116,9 +116,9 @@
         day   (first (first (content-by-tag :Day   lst-of-date-elts)))]
     (str year
          "-"
-         (padding "0" 2 (month-number month))
+         (padding "000" 2 (month-number month))
          "-"
-         (padding "0" 2 day))))
+         (padding "000" 2 day))))
 
 
 (map date-string (map flatten (recur-search :PubDate test-formatted)))
@@ -142,3 +142,41 @@
 (parse-pubmed test-formatted)
 (count (parse-pubmed test-formatted))
 (first (parse-pubmed test-formatted))
+
+
+
+
+;;;
+;;; Test on actual data
+;; Load PubMed XML
+(def ra-bio-inf-xml (slurp "/Users/kazuki/Documents/BWH/_Project_RheumPharm/20140709-RA-bDMARDs-Infection.xml"))
+;;
+;; Delete these lines
+;; <?xml version="1.0"?>
+;; <!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2014//EN" "http://www-ncbi-nlm-nih-gov.ezp-pqrod1.hul.harvard.edu/corehtml/query/DTD/pubmed_140101.dtd">
+;;
+;; Load as a map
+(def ra-bio-inf-map (first (zip-str ra-bio-inf-xml)))
+
+(count (flatten (recur-search :ArticleTitle ra-bio-inf-map)))
+(count (->> (recur-search :Abstract ra-bio-inf-map)
+            (map flatten,  )
+            (map concat-abstract,  )))
+(count (flatten (recur-search :PMID ra-bio-inf-map)))
+(count (map date-string (map flatten (recur-search :PubDate ra-bio-inf-map))))
+
+
+;; Vector of articles
+(count (:content ra-bio-inf-map))
+
+
+;; Work at the article level
+(def parsed-pubmed (map parse-pubmed (:content ra-bio-inf-map)))
+
+(class parsed-pubmed)
+(count parsed-pubmed)
+
+(take 3 parsed-pubmed)
+
+;; there are empty elements
+(filter #(zero? (count %)) parsed-pubmed)
