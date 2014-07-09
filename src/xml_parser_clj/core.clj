@@ -37,7 +37,7 @@
   ;;
   (cond
    ;; Stop at comments
-   (= :CommentsCorrectionslist (:tag a-map)) []
+   (= :CommentsCorrectionsList (:tag a-map)) []
    ;; if tag matches :target a-map
    (= tag (:tag a-map)) (:content a-map)
    ;; if it does not match, and all vector elements are maps
