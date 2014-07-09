@@ -43,16 +43,14 @@
                                          ;; Recurse on each element
                                          (recur-search tag elt))
                                        ;; Drop empty elements
-                                       (filter (complement empty?),  ))
+                                       (filter (complement empty?),  )
+                                       ;; Flatten
+                                       (flatten,  ))
    ;; otherwise return an empty vector
    :else []))
 
-;; works at top level
-;; (recur-search :PubmedArticleSet (first test-formatted))
-;; 
-;; works at deeper levels, but produces garbage
 (recur-search :PMID (first test-formatted))
-(filter (complement nil?) (flatten (recur-search :PMID (first test-formatted))))
+
 
 (recur-search :ArticleTitle (first test-formatted))
 (recur-search :Abstract (first test-formatted))
