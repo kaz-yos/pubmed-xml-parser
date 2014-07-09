@@ -23,8 +23,8 @@
 ;;; Load data
 ;; Load PubMed XML
 (def test-xml (slurp "/Users/kazuki/Documents/BWH/_Project_RheumPharm/_tools/pubmed.test.xml"))
-;; Load 
-(def test-formatted (zip-str test-xml))
+;; Load as a map
+(def test-formatted (first (zip-str test-xml)))
 
 
 ;;;
@@ -43,16 +43,18 @@
                                          ;; Recurse on each element
                                          (recur-search tag elt))
                                        ;; Drop empty elements
-                                       (filter (complement empty?),  )
-                                       ;; Flatten
-                                       (flatten,  ))
+                                       (filter (complement empty?),  ))
    ;; otherwise return an empty vector
    :else []))
 
-(recur-search :PMID (first test-formatted))
+
+;; Simple elements
+(recur-search :PMID test-formatted)
+(recur-search :ArticleTitle test-formatted)
 
 
-(recur-search :ArticleTitle (first test-formatted))
-(recur-search :Abstract (first test-formatted))
+(map flatten (recur-search :Abstract test-formatted))
 
-(flatten (recur-search :Abstract (first test-formatted)))
+(flatten (map :content (first (map flatten (recur-search :Abstract test-formatted)))))
+
+
