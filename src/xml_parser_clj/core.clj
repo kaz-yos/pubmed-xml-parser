@@ -48,15 +48,12 @@
    :else []))
 
 
-;; Simple elements
+;;; Simple elements
 (flatten (recur-search :PMID test-formatted))
 (flatten (recur-search :ArticleTitle test-formatted))
 
-(interleave (flatten (recur-search :PMID test-formatted))
-            (flatten (recur-search :ArticleTitle test-formatted)))
 
-
-;; Abstract (multiple subelements)
+;;; Abstract (multiple subelements)
 (map flatten (recur-search :Abstract test-formatted))
 
 
@@ -64,13 +61,46 @@
 (defn concat-abstract
   "Concatenate abstract elements from an abstract."
   [abstract]
-  ;; 
-  (flatten (map :content abstract)))
+  ;;
+  (->> (map :content abstract)
+       ;; Flatten to a single seq of strings
+       (flatten,  )
+       ;; Make it a single string
+       (apply str,  )))
 
 
 (->> (recur-search :Abstract test-formatted)
      ;; Flatten within each article
      (map flatten,  )
      ;; Concatenate elements within each article
-     (map concat-abstract,  )
-     )
+     (map concat-abstract,  ))
+
+
+;;; Date (require conversion)
+(first (map flatten (recur-search :PubDate test-formatted)))
+
+;;; Define a function to get :content by :tag
+(defn content-by-tag
+  "get :content by :tag"
+  [tag a-map]
+  (->> (filter #(= tag (:tag %)) a-map)
+       (map :content,  )))
+
+
+;;; Define a map to convert month to month number
+(def months {"Jan"  1, "Feb"  2, "Mar"  3, "Apr"  4, "May"  5, "Jun"  6,
+             "Jul"  7, "Aug"  8, "Sep"  9, "Oct" 10, "Nov" 11, "Dec" 12})
+
+(->> (map flatten (recur-search :PubDate test-formatted)))
+
+
+
+
+
+
+(map (partial content-by-tag :Year) (map flatten (recur-search :PubDate test-formatted)))
+(map (partial content-by-tag :Month) (map flatten (recur-search :PubDate test-formatted)))
+(map (partial content-by-tag :Day) (map flatten (recur-search :PubDate test-formatted)))
+
+
+(defn )
