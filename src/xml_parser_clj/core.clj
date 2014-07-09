@@ -95,46 +95,44 @@
 (filter #(= (:tag %) :ArticleTitle) (:content (get (:content (first (:content (first (:content (first test-formatted)))))) 2)))
 
 
+
+;;;
+;;; Using :tag based
 ;;; Define a function to filter a vector based on :tag
 (defn filter-tag
   "Filter vector elements based on :tag values, and return :content"
-  [tag a-vec]
-  (filter #(= (:tag %) tag) a-vec))
+  [tag a-seq]
+  (map :content (filter #(= (:tag %) tag) a-seq)))
 
 ;; Get a vector element with :tag :PubmedArticleSet
 (filter-tag :PubmedArticleSet test-formatted)
+(count (filter-tag :PubmedArticleSet test-formatted))
+(first (filter-tag :PubmedArticleSet test-formatted))
+;; Two :PubmedArticle's are contained
+;; The recursive search should be mapped to these
+(count (first (filter-tag :PubmedArticleSet test-formatted)))
 
 ;; Get a vector using :content
 ;; and filter elements with :tag :PubmedArticle
-(filter-tag :PubmedArticle (:content (first (filter-tag :PubmedArticleSet test-formatted))))
-
-;; Two :PubmedArticles
-(count (filter-tag :PubmedArticle (:content (first (filter-tag :PubmedArticleSet test-formatted)))))
-
-(map :tag (filter-tag :PubmedArticle (:content (first (filter-tag :PubmedArticleSet test-formatted)))))
-
-(map :content (filter-tag :PubmedArticle (:content (first (filter-tag :PubmedArticleSet test-formatted)))))
-
-
-(map #(filter-tag :MedlineCitation %) (map :content (filter-tag :PubmedArticle (:content (first (filter-tag :PubmedArticleSet test-formatted))))))
+(filter-tag :PubmedArticle (first (filter-tag :PubmedArticleSet test-formatted)))
+(count (filter-tag :PubmedArticle (first (filter-tag :PubmedArticleSet test-formatted))))
 
 
 
 
 
+;; map to seq of seq
+(map #(filter-tag :MedlineCitation %) (filter-tag :PubmedArticle (first (filter-tag :PubmedArticleSet test-formatted))))
+
+(first (first (map #(filter-tag :MedlineCitation %) (filter-tag :PubmedArticle (first (filter-tag :PubmedArticleSet test-formatted))))))
+
+(count (first (first (map #(filter-tag :MedlineCitation %) (filter-tag :PubmedArticle (first (filter-tag :PubmedArticleSet test-formatted)))))))
+
+(map #(filter-tag :PMID %) (first (first (map #(filter-tag :MedlineCitation %) (filter-tag :PubmedArticle (first (filter-tag :PubmedArticleSet test-formatted)))))))
 
 
-(filter-tag :ArticleTitle (:content (get (:content (first (:content (first (:content (first test-formatted)))))) 2)))
-(:content (first (filter-tag :ArticleTitle (:content (get (:content (first (:content (first (:content (first test-formatted)))))) 2)))))
-
-
-;; :MedlinejournalInfo
-(:tag (get (:content (first (:content (first (:content (first test-formatted)))))) 3))
-(map :tag (:content (get (:content (first (:content (first (:content (first test-formatted)))))) 3)))
-
-
-
-
+;;
+(map #(filter-tag :ArticleTitle %) (map #(filter-tag :MedlineCitation %) (filter-tag :PubmedArticle (first (filter-tag :PubmedArticleSet test-formatted)))))
 
 
 
