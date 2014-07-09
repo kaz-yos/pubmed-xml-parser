@@ -28,3 +28,38 @@
 (xml/emit-element (zip/root (zip-str "<a href='nakkaya.com'/>")))
 ;;printed (to assure it's not lazy and for performance), can be caught to string variable with with-out-str
 
+
+
+;;;
+;;; Load data
+(def test-xml (slurp "/Users/kazuki/Documents/BWH/_Project_RheumPharm/_tools/pubmed.test.xml"))
+(class test-xml)
+(println test-xml)
+
+(def test-formatted (zip-str test-xml))
+
+(class test-formatted)
+
+(count test-formatted)
+(first test-formatted)
+(last test-formatted)
+
+;; :PubmedArticleSet is a vector
+(:tag (first test-formatted))
+(class (:content (first test-formatted)))
+
+
+;; :PubmedArticle
+(:tag (first (:content (first test-formatted))))
+(class (:content (first (:content (first test-formatted)))))
+
+
+;; :MedlineCitation
+(:tag (first (:content (first (:content (first test-formatted))))))
+(class (:content (first (:content (first (:content (first test-formatted)))))))
+;; Elements are maps
+(map class (:content (first (:content (first (:content (first test-formatted)))))))
+
+
+;; :PMID
+(:tag (first (:content (first (:content (first (:content (first test-formatted))))))))
