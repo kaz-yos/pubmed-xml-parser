@@ -97,7 +97,7 @@
 
 
 ;;;
-;;; Using :tag based
+;;; Using :tag based search
 ;;; Define a function to filter a vector based on :tag
 (defn filter-tag
   "Filter vector elements based on :tag values, and return :content"
@@ -111,6 +111,30 @@
 ;; Two :PubmedArticle's are contained
 ;; The recursive search should be mapped to these
 (count (first (filter-tag :PubmedArticleSet test-formatted)))
+
+
+
+;;; Define a recursive function to look for target :tag
+(defn recur-search
+  "Recursively look for target :tag within an article"
+  [tag a-map]
+  ;;
+  (cond
+   ;; if tag matches :ta-map
+   (= tag (:tag a-map)) (:content a-map)
+   ;; if it does not match, and all vector elements are maps
+   (every? map? (:content a-map)) (for [elt (:content a-map)]
+                                    (recur-search tag elt))
+   ;; otherwise return nil
+   :else nil))
+
+;; works at top level
+(recur-search :PubmedArticleSet (first test-formatted))
+;; 
+;; works at deeper levels, but produces garbage
+(recur-search :PMID (first test-formatted))
+(recur-search :ArticleTitle (first test-formatted))
+
 
 ;; Get a vector using :content
 ;; and filter elements with :tag :PubmedArticle
