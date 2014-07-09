@@ -29,7 +29,6 @@
 ;;printed (to assure it's not lazy and for performance), can be caught to string variable with with-out-str
 
 
-
 ;;;
 ;;; Load data
 (def test-xml (slurp "/Users/kazuki/Documents/BWH/_Project_RheumPharm/_tools/pubmed.test.xml"))
@@ -60,6 +59,85 @@
 ;; Elements are maps
 (map class (:content (first (:content (first (:content (first test-formatted)))))))
 
+(map count (:content (first (:content (first (:content (first test-formatted)))))))
+
+
+;; Check :tag on all vector elements
+(map :tag (:content (first (:content (first (:content (first test-formatted)))))))
 
 ;; :PMID
-(:tag (first (:content (first (:content (first (:content (first test-formatted))))))))
+(:tag (get (:content (first (:content (first (:content (first test-formatted)))))) 0))
+(:content (get (:content (first (:content (first (:content (first test-formatted)))))) 0))
+
+(:content (get (:content (first (:content (first (:content (first test-formatted)))))) 0))
+
+;; Define a helper function
+(defn fst-cont
+  "Get the :content element of the first vector element"
+  [vctr]
+  (:content (first vctr)))
+
+(first (:content (get (fst-cont (fst-cont (fst-cont test-formatted))) 0)))
+
+
+;; :DateCreated
+(:tag (get (:content (first (:content (first (:content (first test-formatted)))))) 1))
+(map :tag (:content (get (:content (first (:content (first (:content (first test-formatted)))))) 1)))
+
+;; :Article
+(:tag (get (:content (first (:content (first (:content (first test-formatted)))))) 2))
+(map :tag (:content (get (:content (first (:content (first (:content (first test-formatted)))))) 2)))
+
+(get (:content (get (:content (first (:content (first (:content (first test-formatted)))))) 2)) 1)
+
+
+;; Filter based on :tag
+(filter #(= (:tag %) :ArticleTitle) (:content (get (:content (first (:content (first (:content (first test-formatted)))))) 2)))
+
+
+;;; Define a function to filter a vector based on :tag
+(defn filter-tag
+  "Filter vector elements based on :tag values, and return :content"
+  [tag a-vec]
+  (filter #(= (:tag %) tag) a-vec))
+
+;; Get a vector element with :tag :PubmedArticleSet
+(filter-tag :PubmedArticleSet test-formatted)
+
+;; Get a vector using :content
+;; and filter elements with :tag :PubmedArticle
+(filter-tag :PubmedArticle (:content (first (filter-tag :PubmedArticleSet test-formatted))))
+
+;; Two :PubmedArticles
+(count (filter-tag :PubmedArticle (:content (first (filter-tag :PubmedArticleSet test-formatted)))))
+
+(map :tag (filter-tag :PubmedArticle (:content (first (filter-tag :PubmedArticleSet test-formatted)))))
+
+(map :content (filter-tag :PubmedArticle (:content (first (filter-tag :PubmedArticleSet test-formatted)))))
+
+
+(map #(filter-tag :MedlineCitation %) (map :content (filter-tag :PubmedArticle (:content (first (filter-tag :PubmedArticleSet test-formatted))))))
+
+
+
+
+
+
+
+(filter-tag :ArticleTitle (:content (get (:content (first (:content (first (:content (first test-formatted)))))) 2)))
+(:content (first (filter-tag :ArticleTitle (:content (get (:content (first (:content (first (:content (first test-formatted)))))) 2)))))
+
+
+;; :MedlinejournalInfo
+(:tag (get (:content (first (:content (first (:content (first test-formatted)))))) 3))
+(map :tag (:content (get (:content (first (:content (first (:content (first test-formatted)))))) 3)))
+
+
+
+
+
+
+
+
+
+
