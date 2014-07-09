@@ -130,15 +130,19 @@
 ;;;
 ;;; Combine output
 (defn parse-pubmed
-  "Parse PubMed XML map (PubmedArticleSet) to format appropriate for CSV"
-  [PubmedArticleSet]
-  (let [ArticleTitle (flatten (recur-search :ArticleTitle PubmedArticleSet))
-        Abstract     (->> (recur-search :Abstract PubmedArticleSet)
+  "Parse PubMed XML map (PubmedArticle) to format appropriate for CSV"
+  [PubmedArticle]
+  (let [ArticleTitle (flatten (recur-search :ArticleTitle PubmedArticle))
+        Abstract     (->> (recur-search :Abstract PubmedArticle)
                           (map flatten,  )
                           (map concat-abstract,  ))
-        PMID         (flatten (recur-search :PMID PubmedArticleSet))
-        PubDate      (map date-string (map flatten (recur-search :PubDate PubmedArticleSet)))]
-    (map vector ArticleTitle Abstract PMID PubDate)))
+        PMID         (flatten (recur-search :PMID PubmedArticle))
+        PubDate      (map date-string (map flatten (recur-search :PubDate PubmedArticle)))]
+    (map vector
+         ArticleTitle
+         (if (empty? Abstract) [""] Abstract)
+         PMID
+         PubDate)))
 
 
 (parse-pubmed test-formatted)
@@ -160,33 +164,16 @@
 ;; Load as a map
 (def ra-bio-inf-map (first (zip-str ra-bio-inf-xml)))
 
-(count (flatten (recur-search :ArticleTitle ra-bio-inf-map)))
-(count (->> (recur-search :Abstract ra-bio-inf-map)
-            (map flatten,  )
-            (map concat-abstract,  )))
-(count (flatten (recur-search :PMID ra-bio-inf-map)))
-(count (map date-string (map flatten (recur-search :PubDate ra-bio-inf-map))))
-
-
-;; Vector of articles
-(count (:content ra-bio-inf-map))
-
 
 ;; Work at the article level
 (def parsed-pubmed (map parse-pubmed (:content ra-bio-inf-map)))
 
 (class parsed-pubmed)
 (count parsed-pubmed)
-
-(take 3 parsed-pubmed)
-
-;; there are empty elements
+(map count parsed-pubmed)
 (filter #(zero? (count %)) parsed-pubmed)
 
-
-;;; Check indeces
-;; http://stackoverflow.com/questions/8641305/find-index-of-an-element-matching-a-predicate-in-clojure
-(defn indices [pred coll]
-   (keep-indexed #(when (pred %2) %1) coll))
-
-(map inc (indices #(zero? (count %)) parsed-pubmed))
+(nth parsed-pubmed 37)
+(nth parsed-pubmed 38) ; This one lacks abstract
+(nth parsed-pubmed 39)
+(nth parsed-pubmed 40)
