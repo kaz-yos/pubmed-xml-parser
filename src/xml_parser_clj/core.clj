@@ -130,18 +130,19 @@ convenience function, first seen at nakkaya.com later in clj.zip src"
 ;;; -main function
 (defn -main
   "-main function to be called when the program is run"
-  []
+  [pm-xml-file-path]
   ;;
-  (let [pm-xml-file-path (first *command-line-args*)
-        ;; parsed-pm        (->> (slurp pm-xml-file-path)
-        ;;                       (zip-str,  )
-        ;;                       (first,  )
-        ;;                       (:conent,  )
-        ;;                       (map parse-pubmed,  ))
-        ]
+  (let [parsed-pm (->> (slurp pm-xml-file-path)
+                       (zip-str,  )
+                       (first,  )
+                       (:content,  )
+                       (map parse-pubmed,  ))]
     ;;
-    (println pm-xml-file-path)
+    ;; Show status
+    (println "Converting PubMed XML to CSV")
+    (println "In file: " pm-xml-file-path)
+    (println "Out file: " (str pm-xml-file-path ".csv"))
+    ;;
     ;; write to a csv file
-    ;; (with-open [out-file (io/writer (str pm-xml-file-path ".csv"))]
-    ;;   (csv/write-csv out-file (map first parsed-pm))))
-  )
+    (with-open [out-file (io/writer (str pm-xml-file-path ".csv"))]
+      (csv/write-csv out-file (map first parsed-pm)))))
