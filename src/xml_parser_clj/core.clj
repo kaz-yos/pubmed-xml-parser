@@ -123,11 +123,11 @@
         day       (first (first (content-by-tag :Day   lst-of-date-elts)))
         day-pad   (padding "000" 2 day)]
     ;;
-    (str year
+    (str (if (empty? year)      "0000" year)
          "-"
-         (if (= "00" month-pad) "01" month-pad)
+         (if (= "00" month-pad) "00"   month-pad)
          "-"
-         (if (= "00" day-pad) "01" day-pad))))
+         (if (= "00" day-pad)   "00"   day-pad))))
 
 
 (map date-string (map flatten (recur-search :PubDate test-formatted)))
