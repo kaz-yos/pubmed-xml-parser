@@ -88,19 +88,42 @@
 
 
 ;;; Define a map to convert month to month number
-(def months {"Jan"  1, "Feb"  2, "Mar"  3, "Apr"  4, "May"  5, "Jun"  6,
-             "Jul"  7, "Aug"  8, "Sep"  9, "Oct" 10, "Nov" 11, "Dec" 12})
+(def month-number {"Jan"  1, "Feb"  2, "Mar"  3, "Apr"  4, "May"  5, "Jun"  6,
+                   "Jul"  7, "Aug"  8, "Sep"  9, "Oct" 10, "Nov" 11, "Dec" 12})
 
 (->> (map flatten (recur-search :PubDate test-formatted)))
 
 
+;;; Define a function to pad with a specific letter to the left
+(defn padding
+  "Pad with a specific letter to the left"
+  [pad-str n orig-str]
+  (->> (str pad-str orig-str)
+       (reverse,  )
+       (take n,  )
+       (reverse,  )
+       (map str,  )
+       (apply str,  )))
+
+(padding "0" 2 "12")
+(padding "0" 2  "1")
+
+
+;;; Define a function to create R style date string
+(defn date-string
+  "Create R style date string given a list of PubMed date maps"
+  [lst-of-date-elts]
+  (let [year  (first (first (content-by-tag :Year  lst-of-date-elts)))
+        month (first (first (content-by-tag :Month lst-of-date-elts)))
+        day   (first (first (content-by-tag :Day   lst-of-date-elts)))]
+    (str year
+         "-"
+         (padding "0" 2 (month-number month))
+         "-"
+         (padding "0" 2 day))))
+
+
+(map date-string (map flatten (recur-search :PubDate test-formatted)))
 
 
 
-
-(map (partial content-by-tag :Year) (map flatten (recur-search :PubDate test-formatted)))
-(map (partial content-by-tag :Month) (map flatten (recur-search :PubDate test-formatted)))
-(map (partial content-by-tag :Day) (map flatten (recur-search :PubDate test-formatted)))
-
-
-(defn )
