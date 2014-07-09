@@ -3,6 +3,9 @@
 ;;;
 ;;; Namespace and dependencies
 (ns xml-parser-clj.core
+  ;; To make .jar executable
+  (:gen-class)
+  ;; Dependencies
   (:require [clojure.xml :as xml]
             [clojure.zip :as zip]
             [clojure.data.csv :as csv]
@@ -130,12 +133,15 @@ convenience function, first seen at nakkaya.com later in clj.zip src"
   []
   ;;
   (let [pm-xml-file-path (first *command-line-args*)
-        parsed-pm        (->> (slurp pm-xml-file-path)
-                              (zip-str,  )
-                              (first,  )
-                              (:conent,  )
-                              (map parse-pubmed,  ))]
+        ;; parsed-pm        (->> (slurp pm-xml-file-path)
+        ;;                       (zip-str,  )
+        ;;                       (first,  )
+        ;;                       (:conent,  )
+        ;;                       (map parse-pubmed,  ))
+        ]
     ;;
+    (println pm-xml-file-path)
     ;; write to a csv file
-    (with-open [out-file (io/writer (str pm-xml-file-path ".csv"))]
-      (csv/write-csv out-file (map first parsed-pm)))))
+    ;; (with-open [out-file (io/writer (str pm-xml-file-path ".csv"))]
+    ;;   (csv/write-csv out-file (map first parsed-pm))))
+  )
