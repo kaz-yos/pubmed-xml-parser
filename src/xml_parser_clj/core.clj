@@ -36,7 +36,9 @@
   [tag a-map]
   ;;
   (cond
-   ;; if tag matches :ta-map
+   ;; Stop at comments
+   (= :CommentsCorrectionslist (:tag a-map)) []
+   ;; if tag matches :target a-map
    (= tag (:tag a-map)) (:content a-map)
    ;; if it does not match, and all vector elements are maps
    (every? map? (:content a-map)) (->> (for [elt (:content a-map)]
@@ -180,3 +182,11 @@
 
 ;; there are empty elements
 (filter #(zero? (count %)) parsed-pubmed)
+
+
+;;; Check indeces
+;; http://stackoverflow.com/questions/8641305/find-index-of-an-element-matching-a-predicate-in-clojure
+(defn indices [pred coll]
+   (keep-indexed #(when (pred %2) %1) coll))
+
+(map inc (indices #(zero? (count %)) parsed-pubmed))
