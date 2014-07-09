@@ -49,12 +49,27 @@
 
 
 ;; Simple elements
-(recur-search :PMID test-formatted)
-(recur-search :ArticleTitle test-formatted)
+(flatten (recur-search :PMID test-formatted))
+(flatten (recur-search :ArticleTitle test-formatted))
+
+(interleave (flatten (recur-search :PMID test-formatted))
+            (flatten (recur-search :ArticleTitle test-formatted)))
 
 
+;; Abstract (multiple subelements)
 (map flatten (recur-search :Abstract test-formatted))
 
-(flatten (map :content (first (map flatten (recur-search :Abstract test-formatted)))))
+
+;;; Define a function to concatenate abstract
+(defn concat-abstract
+  "Concatenate abstract elements from an abstract."
+  [abstract]
+  (map #(flatten (map :content %)) abstract))
 
 
+(->> (recur-search :Abstract test-formatted)
+     ;; Flatten within each article
+     (map flatten,  )
+     ;; Concatenate elements within each article
+     (concat-abstract,  )
+     )
