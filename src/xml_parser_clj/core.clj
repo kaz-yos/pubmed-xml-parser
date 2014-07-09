@@ -187,5 +187,30 @@
 
 (first (map first parsed-pubmed))
 
-(with-open [out-file (io/writer "out-file.csv")]
-  (csv/write-csv out-file (map first parsed-pubmed)))
+
+
+;;;
+;;; Sepcify a directory for conversion
+;; http://clojuredocs.org/clojure_core/clojure.core/file-seq
+;; http://stackoverflow.com/questions/8566531/listing-files-in-a-directory-in-clojure
+(def directory (io/file "/Users/kazuki/Documents/BWH/_Project_RheumPharm/_tools/xml-to-csv-dir"))
+(def files (file-seq directory))
+(take 10 files)
+
+
+
+;;;
+;;; -main function
+(defn -main
+  "-main function to be called when the program is run"
+  [pm-xml-file-path]
+  ;;
+  (let [parsed-pm (->> (slurp pm-xml-file-path)
+                       (zip-str,  )
+                       (first,  )
+                       (:conent,  )
+                       (map parse-pubmed,  ))]
+    ;;
+    ;; write to a csv file
+    (with-open [out-file (io/writer (str pm-xml-file-path ".csv"))]
+      (csv/write-csv out-file (map first parsed-pm)))))
