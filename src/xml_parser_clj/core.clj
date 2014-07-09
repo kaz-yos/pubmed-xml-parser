@@ -113,14 +113,19 @@
 (defn date-string
   "Create R style date string given a list of PubMed date maps"
   [lst-of-date-elts]
-  (let [year  (first (first (content-by-tag :Year  lst-of-date-elts)))
-        month (first (first (content-by-tag :Month lst-of-date-elts)))
-        day   (first (first (content-by-tag :Day   lst-of-date-elts)))]
+  (let [year      (first (first (content-by-tag :Year  lst-of-date-elts)))
+        ;;
+        month     (first (first (content-by-tag :Month lst-of-date-elts)))
+        month-pad (padding "000" 2 (month-number month))
+        ;;
+        day       (first (first (content-by-tag :Day   lst-of-date-elts)))
+        day-pad   (padding "000" 2 day)]
+    ;;
     (str year
          "-"
-         (padding "000" 2 (month-number month))
+         (if (= "00" month-pad) "01" month-pad)
          "-"
-         (padding "000" 2 day))))
+         (if (= "00" day-pad) "01" day-pad))))
 
 
 (map date-string (map flatten (recur-search :PubDate test-formatted)))
