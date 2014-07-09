@@ -64,12 +64,13 @@
 (defn concat-abstract
   "Concatenate abstract elements from an abstract."
   [abstract]
-  (map #(flatten (map :content %)) abstract))
+  ;; 
+  (flatten (map :content abstract)))
 
 
 (->> (recur-search :Abstract test-formatted)
      ;; Flatten within each article
      (map flatten,  )
      ;; Concatenate elements within each article
-     (concat-abstract,  )
+     (map concat-abstract,  )
      )
