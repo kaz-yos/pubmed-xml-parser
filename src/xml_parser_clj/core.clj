@@ -91,8 +91,6 @@
 (def month-number {"Jan"  1, "Feb"  2, "Mar"  3, "Apr"  4, "May"  5, "Jun"  6,
                    "Jul"  7, "Aug"  8, "Sep"  9, "Oct" 10, "Nov" 11, "Dec" 12})
 
-(->> (map flatten (recur-search :PubDate test-formatted)))
-
 
 ;;; Define a function to pad with a specific letter to the left
 (defn padding
@@ -127,3 +125,20 @@
 
 
 
+;;;
+;;; Combine output
+(defn parse-pubmed
+  "Parse PubMed XML map (PubmedArticleSet) to format appropriate for CSV"
+  [PubmedArticleSet]
+  (let [ArticleTitle (flatten (recur-search :ArticleTitle PubmedArticleSet))
+        Abstract     (->> (recur-search :Abstract PubmedArticleSet)
+                          (map flatten,  )
+                          (map concat-abstract,  ))
+        PMID         (flatten (recur-search :PMID PubmedArticleSet))
+        PubDate      (map date-string (map flatten (recur-search :PubDate PubmedArticleSet)))]
+    (map vector ArticleTitle Abstract PMID PubDate)))
+
+
+(parse-pubmed test-formatted)
+(count (parse-pubmed test-formatted))
+(first (parse-pubmed test-formatted))
