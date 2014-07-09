@@ -1,7 +1,9 @@
 ;;; Main file to parse XML
 (ns xml-parser-clj.core
   (:require [clojure.xml :as xml]
-            [clojure.zip :as zip]))
+            [clojure.zip :as zip]
+            [clojure.data.csv :as csv]
+            [clojure.java.io :as io]))
 
 
 ;;;
@@ -182,3 +184,8 @@
 (nth parsed-pubmed 38) ; This one lacks abstract
 (nth parsed-pubmed 39)
 (nth parsed-pubmed 40)
+
+(first (map first parsed-pubmed))
+
+(with-open [out-file (io/writer "out-file.csv")]
+  (csv/write-csv out-file (map first parsed-pubmed)))
